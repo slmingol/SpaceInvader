@@ -62,6 +62,8 @@ The space label panels are borderless `NSPanel` windows pinned to their respecti
 
 On macOS 26 (Tahoe), distributed notifications from the Dock for Mission Control open/close events are no longer delivered to third-party processes. Overlays remain always-visible on non-active spaces rather than appearing exclusively during Mission Control — they are visible in MC thumbnails either way.
 
+**Mission Control thumbnail rendering** — macOS has two render paths for opening MC. The gesture path (trackpad 3-finger swipe, hot corners) triggers a full animation and pre-renders space content into thumbnails before the overlay appears. The keyboard path (F3, Control+Up, any synthetic key event) opens MC instantly via a static render mode that skips thumbnail pre-population — the thumbnail boxes appear but their content is empty. This is a deliberate split in the Dock's MC handler: gesture-originated opens get the expensive render pass; keyboard-originated ones do not. SpaceInvader's space label overlays are visible in MC thumbnails when MC is opened via gesture or hot corner.
+
 ## Building
 
 Open `SpaceInvader.xcodeproj` in Xcode and build the `SpaceInvader` scheme. Dependencies are resolved automatically via Swift Package Manager.
