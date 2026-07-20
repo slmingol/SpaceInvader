@@ -4,6 +4,27 @@
 
 A macOS menu bar app for managing Mission Control spaces. Assign names, colors, and keyboard shortcuts to each space, switch between them instantly, and see colored overlays in Mission Control thumbnails.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><strong>Menu bar badge</strong></td>
+    <td align="center"><strong>Dropdown menu</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/menubar.png" alt="Menu bar badge" width="360"/></td>
+    <td><img src="docs/screenshots/menu.png" alt="Dropdown menu" width="360"/></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>HUD switcher</strong></td>
+    <td align="center"><strong>Mission Control overlays</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/hud.png" alt="HUD switcher" width="360"/></td>
+    <td><img src="docs/screenshots/mc.png" alt="Mission Control overlays" width="360"/></td>
+  </tr>
+</table>
+
 ## Features
 
 - **Menu bar indicator** — shows the active space name and color at a glance
