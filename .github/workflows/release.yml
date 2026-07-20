@@ -47,9 +47,9 @@ jobs:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: |
           SIGN_UPDATE=$(find build/DerivedData/SourcePackages/artifacts -name "sign_update" | head -1)
-          SIGNATURE=$("$SIGN_UPDATE" "build/SpaceInvader-${{ env.VERSION }}.dmg" --ed-key-file <(echo "$SPARKLE_PRIVATE_KEY"))
+          SIGNATURE=$("$SIGN_UPDATE" "build/SpaceInvader-${{ env.VERSION }}.dmg" -p -s "$SPARKLE_PRIVATE_KEY")
           echo "SPARKLE_SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
-          echo "DMG_SIZE=$(stat -f%z build/SpaceInvader-${{ env.VERSION }}.dmg)" >> $GITHUB_ENV
+          echo "DMG_SIZE=$(stat -f%z "build/SpaceInvader-${{ env.VERSION }}.dmg")" >> $GITHUB_ENV
 
       - name: Update appcast.xml
         run: |
