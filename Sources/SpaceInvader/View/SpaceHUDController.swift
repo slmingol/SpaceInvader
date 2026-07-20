@@ -271,9 +271,20 @@ final class SpaceHUDController {
         } else {
             cancelDwell()
             if panel.frame.width > notchFrame.width + 20 && hideAnimTask == nil {
-                scheduleCollapse()
+                if !isJustBelowExpandedPanel(mouse) {
+                    scheduleCollapse()
+                }
             }
         }
+    }
+
+    // Returns true when the mouse has exited the panel bottom by no more than
+    // 20pt — suppresses the collapse timer in that small grace zone.
+    private func isJustBelowExpandedPanel(_ point: NSPoint) -> Bool {
+        let buffer: CGFloat = 20
+        return point.y > finalFrame.minY - buffer
+            && point.y < finalFrame.minY
+            && abs(point.x - finalFrame.midX) < finalFrame.width / 2
     }
 
     private func handleLocalMouse() {
