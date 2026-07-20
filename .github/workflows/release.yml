@@ -91,20 +91,21 @@ jobs:
           date    = "$DATE"
           size    = os.environ["DMG_SIZE"]
 
-          item = f"""
-  <item>
-    <title>Version {version}</title>
-    <pubDate>{date}</pubDate>
-    <sparkle:version>{version}</sparkle:version>
-    <sparkle:shortVersionString>{version}</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v{version}/SpaceInvader-{version}.dmg"
-      sparkle:edSignature="{sig}"
-      length="{size}"
-      type="application/octet-stream"
-    />
-  </item>"""
+          item = (
+              "\n  <item>\n"
+              f"    <title>Version {version}</title>\n"
+              f"    <pubDate>{date}</pubDate>\n"
+              f"    <sparkle:version>{version}</sparkle:version>\n"
+              f"    <sparkle:shortVersionString>{version}</sparkle:shortVersionString>\n"
+              "    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>\n"
+              "    <enclosure\n"
+              f"      url=\"https://github.com/slmingol/SpaceInvader/releases/download/v{version}/SpaceInvader-{version}.dmg\"\n"
+              f"      sparkle:edSignature=\"{sig}\"\n"
+              f"      length=\"{size}\"\n"
+              "      type=\"application/octet-stream\"\n"
+              "    />\n"
+              "  </item>"
+          )
 
           with open("docs/appcast.xml") as f:
               content = f.read()
