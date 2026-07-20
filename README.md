@@ -11,10 +11,14 @@ A macOS menu bar app for managing Mission Control spaces. Assign names, colors, 
   <sub>Mission Control — colored overlays on every space thumbnail</sub>
 </p>
 
+<br/>
+
 <p align="center">
   <img src="docs/screenshots/hud.png" alt="HUD space switcher" width="780"/><br/>
   <sub>HUD switcher — hover near the top of the screen to reveal; click any tile to jump directly</sub>
 </p>
+
+<br/>
 
 <table align="center"><tr>
 <td align="center">
