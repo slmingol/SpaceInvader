@@ -5,6 +5,7 @@ import SwiftUI
 struct StatusMenuView: View {
     let spaces: [Space]
     let appState: AppState
+    var updateAvailable: Bool = false
     var onSpaceSelect: (Space) -> Void
     var onPreferences: () -> Void
     var onCheckForUpdates: () -> Void
@@ -82,14 +83,22 @@ struct StatusMenuView: View {
             Spacer()
 
             Button(action: onCheckForUpdates) {
-                Image(systemName: "arrow.trianglehead.2.clockwise")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 28, height: 28)
-                    .contentShape(Rectangle())
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: "arrow.trianglehead.2.clockwise")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(updateAvailable ? Color(red: 0.18, green: 1, blue: 0.18) : .secondary)
+                        .frame(width: 28, height: 28)
+                    if updateAvailable {
+                        Circle()
+                            .fill(Color(red: 0.18, green: 1, blue: 0.18))
+                            .frame(width: 7, height: 7)
+                            .offset(x: 2, y: -2)
+                    }
+                }
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help("Check for Updates")
+            .help(updateAvailable ? "Update Available — Click to Install" : "Check for Updates")
 
             Button(action: onQuit) {
                 Image(systemName: "power")

@@ -93,6 +93,23 @@ enum MenuBarImageRenderer {
         return image
     }
 
+    // Overlays a small neon-green dot in the top-right corner to signal an available update.
+    static func withUpdateDot(_ base: NSImage) -> NSImage {
+        let size = base.size
+        let image = NSImage(size: size, flipped: false) { rect in
+            base.draw(in: rect)
+            let dotR: CGFloat = 4
+            let dotRect = NSRect(x: size.width - dotR - 0.5,
+                                 y: size.height - dotR - 0.5,
+                                 width: dotR, height: dotR)
+            NSColor(red: 0.18, green: 1, blue: 0.18, alpha: 1).setFill()
+            NSBezierPath(ovalIn: dotRect).fill()
+            return true
+        }
+        image.isTemplate = false
+        return image
+    }
+
     // Renders the "1 Main" style badge shown in the menu bar.
     // Uses a colored rounded-rect for the number and label-color text for the name
     // so it adapts to both light and dark menu bars.

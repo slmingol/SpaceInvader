@@ -10,6 +10,7 @@ final class StatusBarController {
     private let timeTracker: TimeTracker
     private var clickMonitor: Any?
     var onCheckForUpdates: (() -> Void)?
+    private(set) var updateAvailable = false
 
     // Cached spaces for building the popover view
     private var currentSpaces: [Space] = []
@@ -29,20 +30,33 @@ final class StatusBarController {
 
     func update(spaces: [Space]) {
         currentSpaces = spaces
+        refreshStatusBarImage()
 
-        if let active = spaces.first(where: { $0.isActive }),
-           let button = statusItem.button {
-            let name = appState.name(for: active.id)
-            let idx = active.desktopIndex ?? active.index
-            let nsColor = NSColor(appState.resolvedColor(for: active))
-            button.image = MenuBarImageRenderer.activeSpaceBadge(index: idx, name: name, color: nsColor)
-            button.imagePosition = .imageOnly
-        }
-
-        // Refresh popover content if it's open
         if let pop = popover, pop.isShown {
             rebuildPopoverContent()
         }
+    }
+
+    func setUpdateAvailable(_ available: Bool) {
+        updateAvailable = available
+        refreshStatusBarImage()
+        if let pop = popover, pop.isShown {
+            rebuildPopoverContent()
+        }
+    }
+
+    private func refreshStatusBarImage() {
+        guard let active = currentSpaces.first(where: { $0.isActive }),
+              let button = statusItem.button else { return }
+        let name = appState.name(for: active.id)
+        let idx = active.desktopIndex ?? active.index
+        let nsColor = NSColor(appState.resolvedColor(for: active))
+        var image = MenuBarImageRenderer.activeSpaceBadge(index: idx, name: name, color: nsColor)
+        if updateAvailable {
+            image = MenuBarImageRenderer.withUpdateDot(image)
+        }
+        button.image = image
+        button.imagePosition = .imageOnly
     }
 
     // MARK: - Private
@@ -99,6 +113,7 @@ final class StatusBarController {
         let view = StatusMenuView(
             spaces: currentSpaces,
             appState: appState,
+            updateAvailable: updateAvailable,
             onSpaceSelect: { [weak self] (space: Space) in
                 self?.closePopover()
                 SpaceSwitcher.shared.switchToSpace(space)

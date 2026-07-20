@@ -19,7 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         updaterController = SPUStandardUpdaterController(
             startingUpdater: true,
-            updaterDelegate: nil,
+            updaterDelegate: self,
             userDriverDelegate: nil
         )
 
@@ -99,5 +99,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 KeyboardShortcuts.reset(name)
             }
         }
+    }
+}
+
+extension AppDelegate: SPUUpdaterDelegate {
+    func updater(_ updater: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
+        statusBarController?.setUpdateAvailable(true)
     }
 }
