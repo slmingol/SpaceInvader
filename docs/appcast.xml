@@ -6,19 +6,20 @@
     <description>SpaceInvader release feed</description>
     <language>en</language>
 
-    <item>
-      <title>Version 1.0.0</title>
-      <pubDate>Sun, 20 Jul 2026 00:00:00 +0000</pubDate>
-      <sparkle:version>1</sparkle:version>
-      <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
-      <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-      <enclosure
-        url="https://github.com/slmingol/SpaceInvader/releases/download/v1.0.0/SpaceInvader-1.0.0.dmg"
-        sparkle:edSignature="PLACEHOLDER_SIGNATURE"
-        length="0"
-        type="application/octet-stream"
-      />
-    </item>
+
+  <item>
+    <title>Version 1.1.0</title>
+    <pubDate>Mon, 20 Jul 2026 06:02:03 +0000</pubDate>
+    <sparkle:version>1</sparkle:version>
+    <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+    <enclosure
+      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.1.0/SpaceInvader-1.1.0.dmg"
+      sparkle:edSignature="R5l4mmH+u27n2fRnjIN5gpsHONvCmdIe2GvAMcqlZdq9lojEyMl/dG7eHa6KjIVINOHjZ/3IYob8bWLej7JBBw=="
+      length="1918566"
+      type="application/octet-stream"
+    />
+  </item>
 
   </channel>
 </rss>
