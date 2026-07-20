@@ -58,36 +58,36 @@ jobs:
       - name: Update appcast.xml
         run: |
           DATE=$(date -u "+%a, %d %b %Y %H:%M:%S +0000")
-          BUNDLE_VERSION=$(defaults read "$(find build/DerivedData/Build/Products/Release/SpaceInvader.app -name Info.plist)" CFBundleVersion 2>/dev/null || echo "1")
           python3 - <<PYEOF
           import re, os
 
-          sig      = os.environ["SPARKLE_SIGNATURE"]
-          version  = os.environ["VERSION"]
-          date     = "$DATE"
-          size     = os.environ["DMG_SIZE"]
-          bv       = "$BUNDLE_VERSION"
+          sig     = os.environ["SPARKLE_SIGNATURE"]
+          version = os.environ["VERSION"]
+          date    = "$DATE"
+          size    = os.environ["DMG_SIZE"]
 
           item = f"""
-            <item>
-              <title>Version {version}</title>
-              <pubDate>{date}</pubDate>
-              <sparkle:version>{bv}</sparkle:version>
-              <sparkle:shortVersionString>{version}</sparkle:shortVersionString>
-              <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-              <enclosure
-                url="https://github.com/slmingol/SpaceInvader/releases/download/v{version}/SpaceInvader-{version}.dmg"
-                sparkle:edSignature="{sig}"
-                length="{size}"
-                type="application/octet-stream"
-              />
-            </item>"""
+  <item>
+    <title>Version {version}</title>
+    <pubDate>{date}</pubDate>
+    <sparkle:version>{version}</sparkle:version>
+    <sparkle:shortVersionString>{version}</sparkle:shortVersionString>
+    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+    <enclosure
+      url="https://github.com/slmingol/SpaceInvader/releases/download/v{version}/SpaceInvader-{version}.dmg"
+      sparkle:edSignature="{sig}"
+      length="{size}"
+      type="application/octet-stream"
+    />
+  </item>"""
 
           with open("docs/appcast.xml") as f:
               content = f.read()
 
-          # Remove placeholder item, prepend real one
+          # Remove placeholder and any existing entry for this version
           content = re.sub(r'\s*<item>.*?PLACEHOLDER_SIGNATURE.*?</item>', '', content, flags=re.DOTALL)
+          content = re.sub(rf'\s*<item>.*?<sparkle:shortVersionString>{re.escape(version)}</sparkle:shortVersionString>.*?</item>', '', content, flags=re.DOTALL)
+          # Prepend new item (newest first)
           content = content.replace("  </channel>", item + "\n\n  </channel>")
 
           with open("docs/appcast.xml", "w") as f:
