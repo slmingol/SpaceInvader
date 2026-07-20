@@ -107,3 +107,4 @@ extension AppDelegate: SPUUpdaterDelegate {
         statusBarController?.setUpdateAvailable(true)
     }
 }
+
