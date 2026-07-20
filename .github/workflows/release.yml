@@ -105,4 +105,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/appcast.xml
           git commit -m "chore: update appcast.xml for v${{ env.VERSION }}"
+          git pull --rebase origin main
           git push origin HEAD:main
