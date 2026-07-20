@@ -14,6 +14,9 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.app
 
+      - name: Set version from tag
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
       - name: Build (Release)
         run: |
           xcodebuild \
@@ -21,6 +24,7 @@ jobs:
             -configuration Release \
             -derivedDataPath build/DerivedData \
             SYMROOT=build/Products \
+            MARKETING_VERSION=${{ env.VERSION }} \
             build
 
       - name: Create DMG
@@ -29,12 +33,12 @@ jobs:
           cp -R build/Products/Release/SpaceInvader.app build/dmg/
           ln -s /Applications build/dmg/Applications
           hdiutil create \
-            -volname "SpaceInvader" \
+            -volname "SpaceInvader ${{ env.VERSION }}" \
             -srcfolder build/dmg \
             -ov -format UDZO \
-            build/SpaceInvader.dmg
+            build/SpaceInvader-${{ env.VERSION }}.dmg
 
       - name: Upload DMG to release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/SpaceInvader.dmg
+          files: build/SpaceInvader-${{ env.VERSION }}.dmg
