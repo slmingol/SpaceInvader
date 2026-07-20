@@ -53,6 +53,12 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
+      - name: Codesign app bundle (ad-hoc)
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          APP=$(find build/DerivedData/Build/Products/Release -maxdepth 1 -name "SpaceInvader.app" | head -1)
+          codesign --force --deep -s - "$APP"
+
       - name: Create DMG
         if: steps.tag.outputs.skip != 'true'
         run: |
