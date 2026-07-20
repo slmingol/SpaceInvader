@@ -10,6 +10,8 @@ jobs:
     runs-on: macos-15
     permissions:
       contents: write
+      pages: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +42,64 @@ jobs:
             -ov -format UDZO \
             build/SpaceInvader-${{ env.VERSION }}.dmg
 
+      - name: Sign DMG for Sparkle
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          SIGN_UPDATE=$(find build/DerivedData/SourcePackages/artifacts -name "sign_update" | head -1)
+          SIGNATURE=$("$SIGN_UPDATE" "build/SpaceInvader-${{ env.VERSION }}.dmg" --ed-key-file <(echo "$SPARKLE_PRIVATE_KEY"))
+          echo "SPARKLE_SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
+          echo "DMG_SIZE=$(stat -f%z build/SpaceInvader-${{ env.VERSION }}.dmg)" >> $GITHUB_ENV
+
+      - name: Update appcast.xml
+        run: |
+          DATE=$(date -u "+%a, %d %b %Y %H:%M:%S +0000")
+          BUNDLE_VERSION=$(defaults read "$(find build/DerivedData/Build/Products/Release/SpaceInvader.app -name Info.plist)" CFBundleVersion 2>/dev/null || echo "1")
+          python3 - <<PYEOF
+          import re, os
+
+          sig      = os.environ["SPARKLE_SIGNATURE"]
+          version  = os.environ["VERSION"]
+          date     = "$DATE"
+          size     = os.environ["DMG_SIZE"]
+          bv       = "$BUNDLE_VERSION"
+
+          item = f"""
+            <item>
+              <title>Version {version}</title>
+              <pubDate>{date}</pubDate>
+              <sparkle:version>{bv}</sparkle:version>
+              <sparkle:shortVersionString>{version}</sparkle:shortVersionString>
+              <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+              <enclosure
+                url="https://github.com/slmingol/SpaceInvader/releases/download/v{version}/SpaceInvader-{version}.dmg"
+                sparkle:edSignature="{sig}"
+                length="{size}"
+                type="application/octet-stream"
+              />
+            </item>"""
+
+          with open("docs/appcast.xml") as f:
+              content = f.read()
+
+          # Remove placeholder item, prepend real one
+          content = re.sub(r'\s*<item>.*?PLACEHOLDER_SIGNATURE.*?</item>', '', content, flags=re.DOTALL)
+          content = content.replace("  </channel>", item + "\n\n  </channel>")
+
+          with open("docs/appcast.xml", "w") as f:
+              f.write(content)
+          print("appcast.xml updated")
+          PYEOF
+
       - name: Upload DMG to release
         uses: softprops/action-gh-release@v2
         with:
           files: build/SpaceInvader-${{ env.VERSION }}.dmg
+
+      - name: Commit updated appcast.xml
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/appcast.xml
+          git commit -m "chore: update appcast.xml for v${{ env.VERSION }}"
+          git push origin HEAD:main

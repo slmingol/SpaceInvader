@@ -9,6 +9,7 @@ final class StatusBarController {
     private let appState: AppState
     private let timeTracker: TimeTracker
     private var clickMonitor: Any?
+    var onCheckForUpdates: (() -> Void)?
 
     // Cached spaces for building the popover view
     private var currentSpaces: [Space] = []
@@ -105,6 +106,10 @@ final class StatusBarController {
             onPreferences: { [weak self] in
                 self?.closePopover()
                 self?.openPreferences()
+            },
+            onCheckForUpdates: { [weak self] in
+                self?.closePopover()
+                self?.onCheckForUpdates?()
             },
             onQuit: {
                 NSApp.terminate(nil)

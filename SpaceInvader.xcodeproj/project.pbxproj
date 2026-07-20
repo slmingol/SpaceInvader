@@ -24,6 +24,7 @@
 		B4D19E7879CCB3B852F6BBAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52685F04EC8BA55E5B2D00DD /* Assets.xcassets */; };
 		B7170F0D727E73CC6A7F3176 /* QuickSwitcherController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0E2D0ADB909D63D6F0A93E /* QuickSwitcherController.swift */; };
 		C62485BEE31DB94B965D5C24 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = F3C40C7B0AF5AF2D884C2AB0 /* KeyboardShortcuts */; };
+		CB84D9B4D09F446770B2862B /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 7331C80256E9C359FD1B5077 /* Sparkle */; };
 		D11EFB41F1C42913CC301E60 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = C91C0A2C0140A2B41678B4F2 /* LaunchAtLogin */; };
 		E216E7D46018ADEAAF149317 /* SpaceHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179FA8A49E0005FDF287E9D3 /* SpaceHUDView.swift */; };
 		E5AFED38DB5900C798B58A78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355A5FBA96F830561A680622 /* AppDelegate.swift */; };
@@ -67,6 +68,7 @@
 			files = (
 				C62485BEE31DB94B965D5C24 /* KeyboardShortcuts in Frameworks */,
 				D11EFB41F1C42913CC301E60 /* LaunchAtLogin in Frameworks */,
+				CB84D9B4D09F446770B2862B /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,6 +189,7 @@
 			packageProductDependencies = (
 				F3C40C7B0AF5AF2D884C2AB0 /* KeyboardShortcuts */,
 				C91C0A2C0140A2B41678B4F2 /* LaunchAtLogin */,
+				7331C80256E9C359FD1B5077 /* Sparkle */,
 			);
 			productName = SpaceInvader;
 			productReference = CB4E8F9EA64C57797CC603E6 /* SpaceInvader.app */;
@@ -218,6 +221,7 @@
 			packageReferences = (
 				56E19BD4AD8B26798E5D2148 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				F2E20C0D927C00CDCD994A30 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
+				2BA871EB8DB94A4E9E9DBD7D /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A03F86FBD37DC657E769FA46 /* Products */;
@@ -460,6 +464,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2BA871EB8DB94A4E9E9DBD7D /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		56E19BD4AD8B26798E5D2148 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
@@ -479,6 +491,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		7331C80256E9C359FD1B5077 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2BA871EB8DB94A4E9E9DBD7D /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
 		C91C0A2C0140A2B41678B4F2 /* LaunchAtLogin */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F2E20C0D927C00CDCD994A30 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;

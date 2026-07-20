@@ -14,6 +14,9 @@ packages:
   LaunchAtLogin:
     url: https://github.com/sindresorhus/LaunchAtLogin-Modern
     from: "1.0.0"
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.0.0"
 
 targets:
   SpaceInvader:
@@ -45,3 +48,5 @@ targets:
         product: KeyboardShortcuts
       - package: LaunchAtLogin
         product: LaunchAtLogin
+      - package: Sparkle
+        product: Sparkle

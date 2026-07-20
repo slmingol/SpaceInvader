@@ -7,6 +7,7 @@ struct StatusMenuView: View {
     let appState: AppState
     var onSpaceSelect: (Space) -> Void
     var onPreferences: () -> Void
+    var onCheckForUpdates: () -> Void
     var onQuit: () -> Void
 
     private var activeSpace: Space? { spaces.first(where: { $0.isActive }) }
@@ -79,6 +80,16 @@ struct StatusMenuView: View {
                 .foregroundStyle(.tertiary)
 
             Spacer()
+
+            Button(action: onCheckForUpdates) {
+                Image(systemName: "arrow.trianglehead.2.clockwise")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 28, height: 28)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("Check for Updates")
 
             Button(action: onQuit) {
                 Image(systemName: "power")

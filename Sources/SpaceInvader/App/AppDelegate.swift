@@ -1,6 +1,7 @@
 import AppKit
 import KeyboardShortcuts
 import ApplicationServices
+import Sparkle
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -11,13 +12,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var spaceObserver: SpaceObserver?
     private let appState = AppState()
     private let timeTracker = TimeTracker()
+    private var updaterController: SPUStandardUpdaterController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
 
+        updaterController = SPUStandardUpdaterController(
+            startingUpdater: true,
+            updaterDelegate: nil,
+            userDriverDelegate: nil
+        )
+
         requestAccessibilityIfNeeded()
 
         statusBarController = StatusBarController(appState: appState, timeTracker: timeTracker)
+        statusBarController?.onCheckForUpdates = { [weak self] in
+            self?.updaterController?.checkForUpdates(nil)
+        }
         hudController = SpaceHUDController(appState: appState)
         quickSwitcherController = QuickSwitcherController(appState: appState)
         spaceLabelController = SpaceLabelController(appState: appState)

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>SpaceInvader</title>
+    <link>https://slmingol.github.io/SpaceInvader/appcast.xml</link>
+    <description>SpaceInvader release feed</description>
+    <language>en</language>
+
+    <item>
+      <title>Version 1.0.0</title>
+      <pubDate>Sun, 20 Jul 2026 00:00:00 +0000</pubDate>
+      <sparkle:version>1</sparkle:version>
+      <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/slmingol/SpaceInvader/releases/download/v1.0.0/SpaceInvader-1.0.0.dmg"
+        sparkle:edSignature="PLACEHOLDER_SIGNATURE"
+        length="0"
+        type="application/octet-stream"
+      />
+    </item>
+
+  </channel>
+</rss>
