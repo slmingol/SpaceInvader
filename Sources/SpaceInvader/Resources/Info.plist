@@ -24,6 +24,10 @@
     <string>SpaceInvaderNSApplication</string>
     <key>NSAccessibilityUsageDescription</key>
     <string>SpaceInvader uses Accessibility to send keyboard events that switch Mission Control spaces.</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2026. All rights reserved.</string>
 </dict>

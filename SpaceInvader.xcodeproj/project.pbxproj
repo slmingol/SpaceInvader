@@ -18,9 +18,10 @@
 		5C7C8D44D869597E5DF6725B /* SpaceInvaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247C3C8885FD39D1F48D7DD6 /* SpaceInvaderApp.swift */; };
 		6B04B060F371E64CC10F8154 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C83B3BCDDAB558D6AF892CF /* PreferencesView.swift */; };
 		6C033A4F9572DD273B6D1411 /* KeyboardShortcuts+Names.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51487B5E0398A30A1A968C61 /* KeyboardShortcuts+Names.swift */; };
-		A2B3C4D5E6F7A8B9C0D1E2F3 /* TimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A2B1C0D9E8F7A6B5C4D3E2 /* TimeTracker.swift */; };
+		972870B474D3AD0C7160F253 /* TimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55605C626D90BE03458ABC9B /* TimeTracker.swift */; };
 		AB74BAFDFB5B893EC8954969 /* SpaceObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E805FE3BBB9917B8FC0192FA /* SpaceObserver.swift */; };
 		B00AEA4025A56A688CBAA939 /* SpaceInvaderNSApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 281DD40A6283C2FEF0D787D7 /* SpaceInvaderNSApplication.m */; };
+		B4D19E7879CCB3B852F6BBAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52685F04EC8BA55E5B2D00DD /* Assets.xcassets */; };
 		B7170F0D727E73CC6A7F3176 /* QuickSwitcherController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0E2D0ADB909D63D6F0A93E /* QuickSwitcherController.swift */; };
 		C62485BEE31DB94B965D5C24 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = F3C40C7B0AF5AF2D884C2AB0 /* KeyboardShortcuts */; };
 		D11EFB41F1C42913CC301E60 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = C91C0A2C0140A2B41678B4F2 /* LaunchAtLogin */; };
@@ -40,7 +41,9 @@
 		37D830E618AC0B4FB82D495F /* CGSHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CGSHelpers.h; sourceTree = "<group>"; };
 		409A0CAD8FD152742D856274 /* SpaceLabelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceLabelController.swift; sourceTree = "<group>"; };
 		51487B5E0398A30A1A968C61 /* KeyboardShortcuts+Names.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardShortcuts+Names.swift"; sourceTree = "<group>"; };
+		52685F04EC8BA55E5B2D00DD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		52CAF9904D9A64F0AF2601A2 /* Space.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Space.swift; sourceTree = "<group>"; };
+		55605C626D90BE03458ABC9B /* TimeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTracker.swift; sourceTree = "<group>"; };
 		6E36C02144C8F422DF9C11AD /* SpaceHUDController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceHUDController.swift; sourceTree = "<group>"; };
 		6F4A411F8FC3F39C034BEB91 /* StatusMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuView.swift; sourceTree = "<group>"; };
 		7D166F83C30614BD2A992A9D /* SpaceSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceSwitcher.swift; sourceTree = "<group>"; };
@@ -54,7 +57,6 @@
 		CD8A87E8682E7C502CEEE85E /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		DD0E2D0ADB909D63D6F0A93E /* QuickSwitcherController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSwitcherController.swift; sourceTree = "<group>"; };
 		E805FE3BBB9917B8FC0192FA /* SpaceObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceObserver.swift; sourceTree = "<group>"; };
-		F3A2B1C0D9E8F7A6B5C4D3E2 /* TimeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTracker.swift; sourceTree = "<group>"; };
 		FBAC44D19253D8F31C87A773 /* SpaceInvaderNSApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpaceInvaderNSApplication.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,7 +78,7 @@
 			children = (
 				8F5BE3171148F1817ADE72F5 /* AppState.swift */,
 				52CAF9904D9A64F0AF2601A2 /* Space.swift */,
-				F3A2B1C0D9E8F7A6B5C4D3E2 /* TimeTracker.swift */,
+				55605C626D90BE03458ABC9B /* TimeTracker.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -145,6 +147,7 @@
 				A1ADE6AEB3995B8C7BE92717 /* Helpers */,
 				07DAABE0E96BB854E9F355AC /* Model */,
 				10FF2E5798A78335F71B1BFE /* View */,
+				52685F04EC8BA55E5B2D00DD /* Assets.xcassets */,
 			);
 			path = SpaceInvader;
 			sourceTree = "<group>";
@@ -173,6 +176,7 @@
 			buildConfigurationList = 95AA820CE6F6424AD85B002A /* Build configuration list for PBXNativeTarget "SpaceInvader" */;
 			buildPhases = (
 				B5FF3B120E3EB2383E20494C /* Sources */,
+				4061A8DDB3430BBC4B6E4022 /* Resources */,
 				E713A66F4D71151503F365D2 /* Frameworks */,
 			);
 			buildRules = (
@@ -195,7 +199,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2660;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					C8FE7EF8549FEBF240015C8F = {
 						ProvisioningStyle = Automatic;
@@ -225,6 +229,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		4061A8DDB3430BBC4B6E4022 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4D19E7879CCB3B852F6BBAA /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		B5FF3B120E3EB2383E20494C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -240,7 +255,6 @@
 				B7170F0D727E73CC6A7F3176 /* QuickSwitcherController.swift in Sources */,
 				24018C216EB898CFA4E4BEB5 /* QuickSwitcherView.swift in Sources */,
 				5A5AF053835BB657BF33996E /* Space.swift in Sources */,
-				A2B3C4D5E6F7A8B9C0D1E2F3 /* TimeTracker.swift in Sources */,
 				51BEAAC910A5967BA191A32E /* SpaceHUDController.swift in Sources */,
 				E216E7D46018ADEAAF149317 /* SpaceHUDView.swift in Sources */,
 				5C7C8D44D869597E5DF6725B /* SpaceInvaderApp.swift in Sources */,
@@ -250,6 +264,7 @@
 				1F330E87A9D7F4EE04E86162 /* SpaceSwitcher.swift in Sources */,
 				4693070FCA66E907BDBA5E4A /* StatusBarController.swift in Sources */,
 				E71D9B81956D3AE2727FC07D /* StatusMenuView.swift in Sources */,
+				972870B474D3AD0C7160F253 /* TimeTracker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,7 +275,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -291,11 +305,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -316,7 +328,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -331,7 +342,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Sources/SpaceInvader/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -355,7 +365,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Sources/SpaceInvader/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -375,7 +384,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -406,11 +414,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -424,7 +430,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;

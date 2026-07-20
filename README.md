@@ -1,4 +1,6 @@
-# SpaceInvader
+<p align="center">
+  <img src="docs/banner.svg" alt="SpaceInvader" width="780"/>
+</p>
 
 A macOS menu bar app for managing Mission Control spaces. Assign names, colors, and keyboard shortcuts to each space, switch between them instantly, and see colored overlays in Mission Control thumbnails.
 
