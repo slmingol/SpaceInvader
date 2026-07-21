@@ -47,18 +47,19 @@ jobs:
           CERTIFICATE_P12: ${{ secrets.DEVELOPER_ID_CERTIFICATE_P12 }}
           CERTIFICATE_PASSWORD: ${{ secrets.DEVELOPER_ID_CERTIFICATE_PASSWORD }}
         run: |
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain"
           KEYCHAIN_PASSWORD=$(openssl rand -hex 16)
-          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
-          # Add build.keychain to the search list so xcodebuild can find the cert
-          security list-keychains -d user -s build.keychain login.keychain
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain-db
           echo "$CERTIFICATE_P12" | base64 --decode > certificate.p12
-          security import certificate.p12 -k build.keychain -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+          security import certificate.p12 -k "$KEYCHAIN_PATH" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           rm certificate.p12
-          # Verify cert imported correctly
-          security find-identity -v -p codesigning build.keychain
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
 
       - name: Build (Release)
         if: steps.tag.outputs.skip != 'true'
@@ -72,8 +73,48 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Developer ID Application" \
             DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} \
-            OTHER_CODE_SIGN_FLAGS="--keychain build.keychain" \
+            OTHER_CODE_SIGN_FLAGS="--keychain ${{ env.KEYCHAIN_PATH }} --timestamp" \
             build
+
+      - name: Re-sign app for notarization
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          APP=$(find build/DerivedData/Build/Products/Release -maxdepth 1 -name "SpaceInvader.app" | head -1)
+          IDENTITY="Developer ID Application"
+          KEYCHAIN="${{ env.KEYCHAIN_PATH }}"
+          ENTITLEMENTS="Sources/SpaceInvader/Resources/SpaceInvader.entitlements"
+
+          # Sign all nested XPC services
+          find "$APP" -name "*.xpc" | while read xpc; do
+            codesign --force --sign "$IDENTITY" --options runtime --timestamp --keychain "$KEYCHAIN" "$xpc"
+          done
+
+          # Sign nested .app bundles (e.g. Sparkle Updater.app)
+          find "$APP" -name "*.app" | while read nested; do
+            [ "$nested" = "$APP" ] && continue
+            codesign --force --sign "$IDENTITY" --options runtime --timestamp --keychain "$KEYCHAIN" "$nested"
+          done
+
+          # Sign loose helper executables (Autoupdate etc.)
+          find "$APP/Contents/Frameworks" -maxdepth 4 -type f -perm +111 | while read bin; do
+            file "$bin" | grep -q "Mach-O" && \
+              codesign --force --sign "$IDENTITY" --options runtime --timestamp --keychain "$KEYCHAIN" "$bin" || true
+          done
+
+          # Sign frameworks (deepest paths first so outer bundles see signed contents)
+          find "$APP/Contents/Frameworks" -name "*.framework" | sort -r | while read fw; do
+            codesign --force --sign "$IDENTITY" --options runtime --timestamp --keychain "$KEYCHAIN" "$fw"
+          done
+
+          # Sign the main app bundle with entitlements (no get-task-allow)
+          codesign --force --sign "$IDENTITY" --options runtime --timestamp \
+            --keychain "$KEYCHAIN" \
+            --entitlements "$ENTITLEMENTS" \
+            "$APP"
+
+          # Verify
+          codesign --verify --deep --strict "$APP" && echo "Signature valid"
+          spctl --assess --type exec "$APP" && echo "Gatekeeper OK"
 
       - name: Create DMG
         if: steps.tag.outputs.skip != 'true'
