@@ -39,6 +39,21 @@ jobs:
             fi
           fi
 
+      - name: Import Developer ID certificate
+        if: steps.tag.outputs.skip != 'true'
+        env:
+          CERTIFICATE_P12: ${{ secrets.DEVELOPER_ID_CERTIFICATE_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.DEVELOPER_ID_CERTIFICATE_PASSWORD }}
+        run: |
+          KEYCHAIN_PASSWORD=$(openssl rand -hex 16)
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          echo "$CERTIFICATE_P12" | base64 --decode > certificate.p12
+          security import certificate.p12 -k build.keychain -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+          rm certificate.p12
+
       - name: Build (Release)
         if: steps.tag.outputs.skip != 'true'
         run: |
@@ -48,16 +63,7 @@ jobs:
             -derivedDataPath build/DerivedData \
             MARKETING_VERSION=${{ env.VERSION }} \
             CURRENT_PROJECT_VERSION=${{ env.VERSION }} \
-            CODE_SIGN_IDENTITY="-" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
             build
-
-      - name: Codesign app bundle (ad-hoc)
-        if: steps.tag.outputs.skip != 'true'
-        run: |
-          APP=$(find build/DerivedData/Build/Products/Release -maxdepth 1 -name "SpaceInvader.app" | head -1)
-          codesign --force --deep -s - "$APP"
 
       - name: Create DMG
         if: steps.tag.outputs.skip != 'true'
@@ -71,6 +77,20 @@ jobs:
             -srcfolder build/dmg \
             -ov -format UDZO \
             build/SpaceInvader-${{ env.VERSION }}.dmg
+
+      - name: Notarize and staple DMG
+        if: steps.tag.outputs.skip != 'true'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          xcrun notarytool submit "build/SpaceInvader-${{ env.VERSION }}.dmg" \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_ID_PASSWORD" \
+            --wait
+          xcrun stapler staple "build/SpaceInvader-${{ env.VERSION }}.dmg"
 
       - name: Sign DMG for Sparkle
         if: steps.tag.outputs.skip != 'true'
