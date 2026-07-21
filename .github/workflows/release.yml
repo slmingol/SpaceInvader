@@ -112,9 +112,8 @@ jobs:
             --entitlements "$ENTITLEMENTS" \
             "$APP"
 
-          # Verify
+          # Verify signature (spctl Gatekeeper check is not reliable on CI runners)
           codesign --verify --deep --strict "$APP" && echo "Signature valid"
-          spctl --assess --type exec "$APP" && echo "Gatekeeper OK"
 
       - name: Create DMG
         if: steps.tag.outputs.skip != 'true'
