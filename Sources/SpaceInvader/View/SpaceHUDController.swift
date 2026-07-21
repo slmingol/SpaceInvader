@@ -377,6 +377,7 @@ final class SpaceHUDController {
         revealTask?.cancel(); revealTask = nil
         guard let panel, hideAnimTask == nil else { return }
 
+        panel.alphaValue = 0
         let startRect = panel.frame
         let duration  = 0.18
 
