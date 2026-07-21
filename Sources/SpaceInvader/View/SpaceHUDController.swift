@@ -172,6 +172,14 @@ final class SpaceHUDController {
         revealTask?.cancel(); revealTask = nil
         hideDelayTask?.cancel(); hideDelayTask = nil
         if hideAnimTask == nil { collapse() }
+
+        // Hide during the space transition animation so the notch doesn't
+        // flash on the new space's desktop before the panel reaches notchFrame.
+        panel?.alphaValue = 0
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(450))
+            self?.panel?.alphaValue = 1
+        }
     }
 
     // Bottom-align the hosting view in the clip so tiles stay at the panel bottom.
