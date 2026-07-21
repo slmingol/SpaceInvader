@@ -74,7 +74,7 @@ final class SpaceHUDController {
         p.hasShadow = true
         p.level = .statusBar
         p.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
-        p.alphaValue = 1
+        p.alphaValue = 0
 
         let clip = NSView(frame: NSRect(origin: .zero, size: notchFrame.size))
         clip.wantsLayer = true
@@ -101,8 +101,10 @@ final class SpaceHUDController {
     }
 
     private func updateFrames(for screen: NSScreen) {
-        let barH          = NSStatusBar.system.thickness
-        let menuBarBottom = screen.frame.maxY - barH
+        // visibleFrame.maxY is the actual bottom edge of the menu bar — more
+        // reliable than NSStatusBar.system.thickness on macOS 26+.
+        let menuBarBottom = screen.visibleFrame.maxY
+        let barH          = screen.frame.maxY - menuBarBottom
         let panelW        = computePanelWidth(for: appState.spaces)
 
         // Collapsed pill is fully hidden behind the menu bar.
@@ -173,13 +175,10 @@ final class SpaceHUDController {
         hideDelayTask?.cancel(); hideDelayTask = nil
         if hideAnimTask == nil { collapse() }
 
-        // Hide during the space transition animation so the notch doesn't
-        // flash on the new space's desktop before the panel reaches notchFrame.
+        // Hide immediately so the notch doesn't flash on the new space during
+        // the transition animation. collapse() will keep alpha=0 when done;
+        // expand() restores alpha=1 when the user next hovers.
         panel?.alphaValue = 0
-        Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .milliseconds(450))
-            self?.panel?.alphaValue = 1
-        }
     }
 
     // Bottom-align the hosting view in the clip so tiles stay at the panel bottom.
@@ -336,6 +335,7 @@ final class SpaceHUDController {
         hideAnimTask?.cancel(); hideAnimTask = nil
         guard let panel, revealTask == nil else { return }
 
+        panel.alphaValue = 1
         let startRect = panel.frame
         let duration  = 0.25
 
@@ -394,6 +394,7 @@ final class SpaceHUDController {
                 if progress >= 1 {
                     panel.setFrame(self.notchFrame, display: false)
                     self.updateHostingPosition(panelSize: self.notchFrame.size)
+                    panel.alphaValue = 0
                     break
                 }
                 try? await Task.sleep(nanoseconds: 16_666_667)
