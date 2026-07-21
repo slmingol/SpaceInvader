@@ -211,7 +211,8 @@ jobs:
 
           content = re.sub(r'\s*<item>.*?PLACEHOLDER_SIGNATURE.*?</item>', '', content, flags=re.DOTALL)
           content = re.sub(rf'\s*<item>.*?<sparkle:shortVersionString>{re.escape(version)}</sparkle:shortVersionString>.*?</item>', '', content, flags=re.DOTALL)
-          content = content.replace("  </channel>", item + "\n\n  </channel>")
+          # Prepend so newest version is always first (Sparkle reads top-down).
+          content = content.replace("    <language>en</language>", "    <language>en</language>\n" + item)
 
           with open("docs/appcast.xml", "w") as f:
               f.write(content)
