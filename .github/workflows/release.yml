@@ -51,10 +51,14 @@ jobs:
           security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security default-keychain -s build.keychain
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          # Add build.keychain to the search list so xcodebuild can find the cert
+          security list-keychains -d user -s build.keychain login.keychain
           echo "$CERTIFICATE_P12" | base64 --decode > certificate.p12
           security import certificate.p12 -k build.keychain -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
           rm certificate.p12
+          # Verify cert imported correctly
+          security find-identity -v -p codesigning build.keychain
 
       - name: Build (Release)
         if: steps.tag.outputs.skip != 'true'
@@ -65,6 +69,9 @@ jobs:
             -derivedDataPath build/DerivedData \
             MARKETING_VERSION=${{ env.VERSION }} \
             CURRENT_PROJECT_VERSION=${{ env.VERSION }} \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            OTHER_CODE_SIGN_FLAGS="--keychain build.keychain" \
             build
 
       - name: Create DMG
@@ -87,11 +94,21 @@ jobs:
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          xcrun notarytool submit "build/SpaceInvader-${{ env.VERSION }}.dmg" \
+          SUBMIT_OUTPUT=$(xcrun notarytool submit "build/SpaceInvader-${{ env.VERSION }}.dmg" \
             --apple-id "$APPLE_ID" \
             --team-id "$APPLE_TEAM_ID" \
             --password "$APPLE_ID_PASSWORD" \
-            --wait
+            --wait 2>&1)
+          echo "$SUBMIT_OUTPUT"
+          SUBMISSION_ID=$(echo "$SUBMIT_OUTPUT" | grep '^\s*id:' | head -1 | awk '{print $2}')
+          if echo "$SUBMIT_OUTPUT" | grep -q "status: Invalid"; then
+            echo "Notarization rejected — fetching log:"
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --apple-id "$APPLE_ID" \
+              --team-id "$APPLE_TEAM_ID" \
+              --password "$APPLE_ID_PASSWORD"
+            exit 1
+          fi
           xcrun stapler staple "build/SpaceInvader-${{ env.VERSION }}.dmg"
 
       - name: Sign DMG for Sparkle
