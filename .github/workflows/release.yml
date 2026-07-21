@@ -165,9 +165,22 @@ jobs:
           echo "SPARKLE_SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
           echo "DMG_SIZE=$(stat -f%z "build/SpaceInvader-${{ env.VERSION }}.dmg")" >> $GITHUB_ENV
 
-      - name: Update appcast.xml
+      - name: Upload DMG to release
+        if: steps.tag.outputs.skip != 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          files: build/SpaceInvader-${{ env.VERSION }}.dmg
+
+      - name: Commit updated appcast.xml
         if: steps.tag.outputs.skip != 'true'
         run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Fetch latest main so concurrent release runs don't conflict on appcast.xml.
+          # Re-apply the appcast update on top of whatever is currently on origin/main.
+          git fetch origin main
+          git checkout origin/main -- docs/appcast.xml
           DATE=$(date -u "+%a, %d %b %Y %H:%M:%S +0000")
           python3 - <<PYEOF
           import re, os
@@ -196,29 +209,14 @@ jobs:
           with open("docs/appcast.xml") as f:
               content = f.read()
 
-          # Remove placeholder and any existing entry for this version
           content = re.sub(r'\s*<item>.*?PLACEHOLDER_SIGNATURE.*?</item>', '', content, flags=re.DOTALL)
           content = re.sub(rf'\s*<item>.*?<sparkle:shortVersionString>{re.escape(version)}</sparkle:shortVersionString>.*?</item>', '', content, flags=re.DOTALL)
-          # Prepend new item (newest first)
           content = content.replace("  </channel>", item + "\n\n  </channel>")
 
           with open("docs/appcast.xml", "w") as f:
               f.write(content)
           print("appcast.xml updated")
           PYEOF
-
-      - name: Upload DMG to release
-        if: steps.tag.outputs.skip != 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ env.VERSION }}
-          files: build/SpaceInvader-${{ env.VERSION }}.dmg
-
-      - name: Commit updated appcast.xml
-        if: steps.tag.outputs.skip != 'true'
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/appcast.xml
           git commit -m "chore: update appcast.xml for v${{ env.VERSION }}"
           git pull --rebase origin main
