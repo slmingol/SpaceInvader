@@ -4,6 +4,25 @@ This document covers how SpaceInvader is signed, notarized, and distributed outs
 
 ---
 
+## Step 0 — Enroll in the Apple Developer Program (one-time)
+
+This only needs to be done once per Apple ID.
+
+1. Go to **developer.apple.com/programs/enroll**
+2. Sign in with your Apple ID (create one at appleid.apple.com if needed)
+3. Choose entity type:
+   - **Individual** — simplest, $99/year, your legal name appears on the certificate
+   - **Organization** — requires a D-U-N-S number, used when publishing under a company name
+4. Agree to the Apple Developer Program License Agreement
+5. Pay the $99/year fee (credit card or PayPal)
+6. Wait for the confirmation email — Individual enrollments are usually approved within minutes
+
+Once enrolled, your Apple ID gains access to App Store Connect, developer certificates, and the notary service.
+
+> If you already have an App Store Connect account with apps listed, you are already enrolled — no action needed.
+
+---
+
 ## Prerequisites
 
 - An Apple Developer Program membership ($99/year) enrolled at developer.apple.com
