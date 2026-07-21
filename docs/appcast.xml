@@ -6,149 +6,17 @@
     <description>SpaceInvader release feed</description>
     <language>en</language>
 
-  <item>
-    <title>Version 1.2.0</title>
-    <pubDate>Mon, 20 Jul 2026 07:01:55 +0000</pubDate>
-    <sparkle:version>1.2.0</sparkle:version>
-    <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.2.0/SpaceInvader-1.2.0.dmg"
-      sparkle:edSignature="FGWhwjANbyUQMjyAgicg62bqWUQ68lxqjPUdwtjLOqZcNZJHvdLki6poBP1yIIHGYpKYuXY+AceCpYcYo2dIBw=="
-      length="1918683"
-      type="application/octet-stream"
-    />
-  </item>
 
   <item>
-    <title>Version 1.1.1</title>
-    <pubDate>Mon, 20 Jul 2026 06:19:36 +0000</pubDate>
-    <sparkle:version>1.1.1</sparkle:version>
-    <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
+    <title>Version 1.5.12</title>
+    <pubDate>Tue, 21 Jul 2026 15:57:09 +0000</pubDate>
+    <sparkle:version>1.5.12</sparkle:version>
+    <sparkle:shortVersionString>1.5.12</sparkle:shortVersionString>
     <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
     <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.1.1/SpaceInvader-1.1.1.dmg"
-      sparkle:edSignature="EiNLXT83dureVVwhrNgHuc3wJvxfmDVMamb4t2NzkIpO4yG3HvKZE1JGhEkOtlh9L4aSYzYlpoig6/ApBVvWAw=="
-      length="1918770"
-      type="application/octet-stream"
-    />
-  </item>
-
-  <item>
-    <title>Version 1.1.0</title>
-    <pubDate>Mon, 20 Jul 2026 06:02:03 +0000</pubDate>
-    <sparkle:version>1.1.0</sparkle:version>
-    <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.1.0/SpaceInvader-1.1.0.dmg"
-      sparkle:edSignature="R5l4mmH+u27n2fRnjIN5gpsHONvCmdIe2GvAMcqlZdq9lojEyMl/dG7eHa6KjIVINOHjZ/3IYob8bWLej7JBBw=="
-      length="1918566"
-      type="application/octet-stream"
-    />
-  </item>
-
-
-  <item>
-    <title>Version 1.5.0</title>
-    <pubDate>Mon, 20 Jul 2026 07:53:31 +0000</pubDate>
-    <sparkle:version>1.5.0</sparkle:version>
-    <sparkle:shortVersionString>1.5.0</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.5.0/SpaceInvader-1.5.0.dmg"
-      sparkle:edSignature="uIfY3BN2gwIV8P3BKIj9gnIivPYzxJeJ31Urt0Z/3U/LE+F1qSx5wG3Rgewkr3CLilZo/+Qyf2001hxCSnS6Cg=="
-      length="1928564"
-      type="application/octet-stream"
-    />
-  </item>
-
-
-  <item>
-    <title>Version 1.5.1</title>
-    <pubDate>Mon, 20 Jul 2026 08:26:58 +0000</pubDate>
-    <sparkle:version>1.5.1</sparkle:version>
-    <sparkle:shortVersionString>1.5.1</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.5.1/SpaceInvader-1.5.1.dmg"
-      sparkle:edSignature="l49le7XiFWEt/p2Z7OgnBXGJVEV3iMOnkjT9CQxw3epSh65lUuoUoAQhayMfZJOUuehDuT3DhCxAyytepmPzBQ=="
-      length="1928735"
-      type="application/octet-stream"
-    />
-  </item>
-
-
-  <item>
-    <title>Version 1.5.2</title>
-    <pubDate>Mon, 20 Jul 2026 08:52:13 +0000</pubDate>
-    <sparkle:version>1.5.2</sparkle:version>
-    <sparkle:shortVersionString>1.5.2</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.5.2/SpaceInvader-1.5.2.dmg"
-      sparkle:edSignature="FzvUZs4iXTtUZvY7xmAHPVh341t3nWhvWqeVGJ/BwvuKkCi66Lp1k0T941zkRKS9tkIQz/JwJkPCuFZzMooGDA=="
-      length="1928621"
-      type="application/octet-stream"
-    />
-  </item>
-
-
-  <item>
-    <title>Version 1.5.3</title>
-    <pubDate>Mon, 20 Jul 2026 09:05:13 +0000</pubDate>
-    <sparkle:version>1.5.3</sparkle:version>
-    <sparkle:shortVersionString>1.5.3</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.5.3/SpaceInvader-1.5.3.dmg"
-      sparkle:edSignature="HH8UPQmBqRNelw2oJ4yzlYHJvKC2kvzLKesEjKCjpfQR9T3r7J8ZO/CLPGwor2imv7i3Nobfk60+OvTF5i+HDw=="
-      length="1930885"
-      type="application/octet-stream"
-    />
-  </item>
-
-
-  <item>
-    <title>Version 1.5.4</title>
-    <pubDate>Mon, 20 Jul 2026 11:05:07 +0000</pubDate>
-    <sparkle:version>1.5.4</sparkle:version>
-    <sparkle:shortVersionString>1.5.4</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.5.4/SpaceInvader-1.5.4.dmg"
-      sparkle:edSignature="1i0kx+RQ0eUNZhWzFWSji8D85SOuyh9U7mskuPcqVdjRLEreRWVJ6y+9rkK5dQBkLUmLYW8N3OIpKyc26AX1BQ=="
-      length="1930756"
-      type="application/octet-stream"
-    />
-  </item>
-
-
-  <item>
-    <title>Version 1.5.5</title>
-    <pubDate>Mon, 20 Jul 2026 13:33:44 +0000</pubDate>
-    <sparkle:version>1.5.5</sparkle:version>
-    <sparkle:shortVersionString>1.5.5</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.5.5/SpaceInvader-1.5.5.dmg"
-      sparkle:edSignature="huRR5T4tzi9m8UJPlRmXAt/JPs8XoNccEeuDgBoGUAYxZnEi7ClJLhv433ZY7A5mxWwWhDi2e9P83KdTrvscCQ=="
-      length="1931144"
-      type="application/octet-stream"
-    />
-  </item>
-
-
-  <item>
-    <title>Version 1.5.11</title>
-    <pubDate>Tue, 21 Jul 2026 15:53:25 +0000</pubDate>
-    <sparkle:version>1.5.11</sparkle:version>
-    <sparkle:shortVersionString>1.5.11</sparkle:shortVersionString>
-    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-    <enclosure
-      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.5.11/SpaceInvader-1.5.11.dmg"
-      sparkle:edSignature="nA1QOTg15UfdFW2ZBef1BvNjoq7jRO6lqz4Idqr1G6SUI8jvSTOFv4dXnTUxPy+KK7BNzbUfpb+iZMXdyCz7AQ=="
-      length="1709196"
+      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.5.12/SpaceInvader-1.5.12.dmg"
+      sparkle:edSignature="/uNGZZebcydVGNaJ8O0dhsIagrtG0Vmj1R83/gmzW0Yeko8Y9OsDATDFGucaOSbiDx0RN/U8NIkTSPhkUJOTAA=="
+      length="1995741"
       type="application/octet-stream"
     />
   </item>
