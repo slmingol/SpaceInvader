@@ -153,5 +153,20 @@
     />
   </item>
 
+
+  <item>
+    <title>Version 1.5.12</title>
+    <pubDate>Tue, 21 Jul 2026 15:56:33 +0000</pubDate>
+    <sparkle:version>1.5.12</sparkle:version>
+    <sparkle:shortVersionString>1.5.12</sparkle:shortVersionString>
+    <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+    <enclosure
+      url="https://github.com/slmingol/SpaceInvader/releases/download/v1.5.12/SpaceInvader-1.5.12.dmg"
+      sparkle:edSignature="37L+NW/08Wi/nFBc1A282HZp6uz5mNT0UXGw9fevJTA984CAZgjQUN0aWx7XVEqdcktemLHsonLkYvE2bEMYBw=="
+      length="1995948"
+      type="application/octet-stream"
+    />
+  </item>
+
   </channel>
 </rss>
