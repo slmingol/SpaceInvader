@@ -20,6 +20,7 @@ final class SpaceHUDController {
     nonisolated(unsafe) private var globalMonitor: Any?
     nonisolated(unsafe) private var localMonitor: Any?
     nonisolated(unsafe) private var mouseDownMonitor: Any?
+    nonisolated(unsafe) private var screenChangeObserver: Any?
     private var spacesCancellable: AnyCancellable?
 
     private var dwellTask: Task<Void, Never>?
@@ -48,6 +49,7 @@ final class SpaceHUDController {
         if let m = globalMonitor    { NSEvent.removeMonitor(m) }
         if let m = localMonitor     { NSEvent.removeMonitor(m) }
         if let m = mouseDownMonitor { NSEvent.removeMonitor(m) }
+        if let o = screenChangeObserver { NotificationCenter.default.removeObserver(o) }
     }
 
     // Called externally (e.g. AppDelegate hotkey handlers) to collapse immediately.
@@ -181,6 +183,20 @@ final class SpaceHUDController {
         panel?.alphaValue = 0
     }
 
+    private func screenDidChange() {
+        guard let screen = NSScreen.main, let panel else { return }
+        updateFrames(for: screen)
+        hostingView?.frame.size = finalFrame.size
+        // Snap to the correct frame for the current state.
+        if panel.alphaValue == 0 {
+            panel.setFrame(notchFrame, display: false)
+            updateHostingPosition(panelSize: notchFrame.size)
+        } else {
+            panel.setFrame(finalFrame, display: false)
+            updateHostingPosition(panelSize: finalFrame.size)
+        }
+    }
+
     // Bottom-align the hosting view in the clip so tiles stay at the panel bottom.
     private func updateHostingPosition(panelSize: NSSize) {
         guard let hv = hostingView else { return }
@@ -193,6 +209,14 @@ final class SpaceHUDController {
     // MARK: - Mouse tracking
 
     private func startTracking() {
+        screenChangeObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in self?.screenDidChange() }
+        }
+
         globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
             Task { @MainActor [weak self] in self?.handleGlobalMouse() }
         }
