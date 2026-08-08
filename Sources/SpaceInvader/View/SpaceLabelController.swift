@@ -2,11 +2,12 @@ import AppKit
 
 @MainActor
 final class SpaceLabelController {
-    private var panels:       [String: NSPanel] = [:]
-    private var pinnedSpaces: Set<String>       = []
+    private var panels:         [String: NSPanel] = [:]
+    private var pinnedSpaces:   Set<String>       = []  // successfully pinned to their own space
+    private var floatingSpaces: Set<String>       = []  // pinning failed; use canJoinAllSpaces + alpha control
     private let appState: AppState
     nonisolated(unsafe) private var spaceChangeObserver: Any?
-    private var fadeTasks:    [String: DispatchWorkItem] = [:]
+    private var fadeTasks:      [String: DispatchWorkItem] = [:]
 
     init(appState: AppState) {
         self.appState = appState
@@ -27,6 +28,7 @@ final class SpaceLabelController {
             panels[id]?.orderOut(nil)
             panels.removeValue(forKey: id)
             pinnedSpaces.remove(id)
+            floatingSpaces.remove(id)
         }
         let existingIDs = Set(panels.keys)
         let activeSpaceCGID = spaces.first(where: { $0.isActive })?.cgID ?? 0
@@ -47,7 +49,10 @@ final class SpaceLabelController {
 
     private func syncVisibility(spaces: [Space]) {
         for space in spaces {
-            guard let panel = panels[space.id], pinnedSpaces.contains(space.id) else { continue }
+            guard let panel = panels[space.id] else { continue }
+            let isTracked = pinnedSpaces.contains(space.id) || floatingSpaces.contains(space.id)
+            guard isTracked else { continue }
+
             if space.isActive {
                 // Cancel any in-flight fade; flash the label, then fade out.
                 fadeTasks[space.id]?.cancel()
@@ -61,10 +66,15 @@ final class SpaceLabelController {
                 }
                 fadeTasks[space.id] = work
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: work)
+            } else if floatingSpaces.contains(space.id) {
+                // Floating panel is on all spaces — keep hidden when not active
+                // so it doesn't show as a stale banner on the wrong desktop.
+                if fadeTasks[space.id] == nil {
+                    panel.alphaValue = 0
+                }
             } else if fadeTasks[space.id] == nil {
-                // Only make visible if no fade is in progress. If a fade is
-                // running (space was just left), let it complete rather than
-                // snapping back to visible and leaving a stale banner.
+                // Pinned panel is on its own space — always visible there (MC thumbnails).
+                // Let in-flight fades complete rather than snapping back to visible.
                 panel.alphaValue = 1
             }
         }
@@ -102,10 +112,18 @@ final class SpaceLabelController {
             let sourceSID = UInt64(activeSpaceCGID)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self, weak panel] in
                 guard let self, let panel else { return }
-                let pinned = self.pinPanel(panel, toSpaceID: targetSID, fromSpaceID: sourceSID)
-                self.pinnedSpaces.insert(spaceID)
-                // Keep hidden if pinning failed — panel is stuck on the wrong space.
-                panel.alphaValue = (isActive || !pinned) ? 0 : 1
+                let ok = self.pinPanel(panel, toSpaceID: targetSID, fromSpaceID: sourceSID)
+                if ok {
+                    self.pinnedSpaces.insert(spaceID)
+                    panel.alphaValue = 1
+                } else {
+                    // Pinning failed — make panel join all spaces so it can flash
+                    // on the correct space when the user switches there, but keep
+                    // it hidden until that space becomes active.
+                    panel.collectionBehavior.insert(.canJoinAllSpaces)
+                    self.floatingSpaces.insert(spaceID)
+                    panel.alphaValue = 0
+                }
             }
         }
     }
