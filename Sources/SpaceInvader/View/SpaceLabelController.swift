@@ -48,10 +48,10 @@ final class SpaceLabelController {
     private func syncVisibility(spaces: [Space]) {
         for space in spaces {
             guard let panel = panels[space.id], pinnedSpaces.contains(space.id) else { continue }
-            fadeTasks[space.id]?.cancel()
-            fadeTasks[space.id] = nil
             if space.isActive {
-                // Flash the label on the newly active space, then fade it out.
+                // Cancel any in-flight fade; flash the label, then fade out.
+                fadeTasks[space.id]?.cancel()
+                fadeTasks[space.id] = nil
                 panel.alphaValue = 1
                 let work = DispatchWorkItem { [weak panel] in
                     NSAnimationContext.runAnimationGroup { ctx in
@@ -61,7 +61,10 @@ final class SpaceLabelController {
                 }
                 fadeTasks[space.id] = work
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: work)
-            } else {
+            } else if fadeTasks[space.id] == nil {
+                // Only make visible if no fade is in progress. If a fade is
+                // running (space was just left), let it complete rather than
+                // snapping back to visible and leaving a stale banner.
                 panel.alphaValue = 1
             }
         }
@@ -99,18 +102,20 @@ final class SpaceLabelController {
             let sourceSID = UInt64(activeSpaceCGID)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self, weak panel] in
                 guard let self, let panel else { return }
-                self.pinPanel(panel, toSpaceID: targetSID, fromSpaceID: sourceSID)
+                let pinned = self.pinPanel(panel, toSpaceID: targetSID, fromSpaceID: sourceSID)
                 self.pinnedSpaces.insert(spaceID)
-                panel.alphaValue = isActive ? 0 : 1
+                // Keep hidden if pinning failed — panel is stuck on the wrong space.
+                panel.alphaValue = (isActive || !pinned) ? 0 : 1
             }
         }
     }
 
-    private func pinPanel(_ panel: NSPanel, toSpaceID sid: UInt64, fromSpaceID: UInt64) {
+    @discardableResult
+    private func pinPanel(_ panel: NSPanel, toSpaceID sid: UInt64, fromSpaceID: UInt64) -> Bool {
         let wid = UInt32(panel.windowNumber)
-        guard wid != 0, sid != 0, fromSpaceID != 0 else { return }
+        guard wid != 0, sid != 0, fromSpaceID != 0 else { return false }
         let conn = _CGSDefaultConnection()
-        SIMoveWindowToSpace(conn, wid, sid, fromSpaceID)
+        return SIMoveWindowToSpace(conn, wid, sid, fromSpaceID)
     }
 
     // MARK: - Panel factory
