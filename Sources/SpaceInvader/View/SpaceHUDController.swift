@@ -332,7 +332,7 @@ final class SpaceHUDController {
         guard let screen = NSScreen.main else { return false }
         let barH = NSStatusBar.system.thickness
         return abs(point.x - screen.frame.midX) < 160
-            && point.y > screen.frame.maxY - barH - 40
+            && point.y > screen.frame.maxY - barH - 8
             && point.y <= screen.frame.maxY
     }
 
