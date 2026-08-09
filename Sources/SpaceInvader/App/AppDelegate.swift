@@ -54,12 +54,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             name: .spaceMetadataChanged,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(screensChanged),
+            name: NSApplication.didChangeScreenParametersNotification,
+            object: nil
+        )
 
         setupHotkeys()
         observer.start()
     }
 
     @objc private func spaceMetadataChanged() {
+        spaceLabelController?.refreshAll(spaces: appState.spaces)
+    }
+
+    @objc private func screensChanged() {
         spaceLabelController?.refreshAll(spaces: appState.spaces)
     }
 

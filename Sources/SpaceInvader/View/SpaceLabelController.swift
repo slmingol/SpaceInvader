@@ -255,15 +255,30 @@ final class SpaceLabelController {
     }
 
     private func updateContent(panel: NSPanel, space: Space) {
-        let text  = labelText(for: space)
-        let color = NSColor(appState.resolvedColor(for: space))
-        guard let screen = NSScreen.main else { return }
-        let rect = overlayRect(screen: screen)
+        let text   = labelText(for: space)
+        let color  = NSColor(appState.resolvedColor(for: space))
+        let screen = screen(for: space.displayID, panel: panel)
+        let rect   = overlayRect(screen: screen)
         panel.setFrame(rect, display: false)
         panel.contentView = OverlayView(
             text: text, color: color,
             frame: NSRect(origin: .zero, size: rect.size)
         )
+    }
+
+    // Match the CGS display UUID string to an NSScreen. Falls back to the
+    // screen the panel is already on, then NSScreen.main.
+    private func screen(for displayID: String, panel: NSPanel) -> NSScreen {
+        for screen in NSScreen.screens {
+            guard
+                let num  = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber,
+                let uref = CGDisplayCreateUUIDFromDisplayID(CGDirectDisplayID(num.uint32Value))?.takeRetainedValue(),
+                let ustr = CFUUIDCreateString(nil, uref) as String?,
+                ustr == displayID
+            else { continue }
+            return screen
+        }
+        return panel.screen ?? NSScreen.main ?? NSScreen.screens[0]
     }
 
     private func labelText(for space: Space) -> String {
