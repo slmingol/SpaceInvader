@@ -67,6 +67,19 @@ BOOL SISwitchSpaceByGesture(unsigned int targetIndex, unsigned int currentIndex)
 extern int CGSAddWindowsToSpaces(int conn, CFArrayRef windows, CFArrayRef spaces);
 extern int CGSRemoveWindowsFromSpaces(int conn, CFArrayRef windows, CFArrayRef spaces);
 
+// Atomic assign-to-one-space. Verified exported by CoreGraphics (forwarding to
+// SkyLight's _SLSSpaceAddWindowsAndRemoveFromSpaces) on macOS 26.6 / 25G72.
+//   sid      — id64 of the destination space
+//   selector — mask of space types to remove the window from; 0x7 = all types
+extern int CGSSpaceAddWindowsAndRemoveFromSpaces(int conn, uint64_t sid,
+                                                 CFArrayRef windows, int selector);
+
+// windows — CFArray of CFNumber(SInt32) CGWindowID
+// returns — CFArray of CFNumber space id64s, empty while unregistered
+extern CFArrayRef CGSCopySpacesForWindows(int conn, int selector, CFArrayRef windows);
+
+static const int kSIAllSpacesSelector = 0x7;
+
 static CFArrayRef makeWindowArray(uint32_t windowID) {
     CFNumberRef n = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &windowID);
     if (!n) return NULL;
@@ -82,6 +95,41 @@ static CFArrayRef makeSpaceArray(uint64_t spaceID) {
     CFArrayRef a = CFArrayCreate(kCFAllocatorDefault, (const void **)&n, 1, &kCFTypeArrayCallBacks);
     CFRelease(n);
     return a;
+}
+
+NSArray<NSNumber *> *SICopySpacesForWindow(int conn, uint32_t windowID) {
+    if (windowID == 0) return @[];
+    CFArrayRef wins = makeWindowArray(windowID);
+    if (!wins) return @[];
+    CFArrayRef spaces = CGSCopySpacesForWindows(conn, kSIAllSpacesSelector, wins);
+    CFRelease(wins);
+    if (!spaces) return @[];
+    return (__bridge_transfer NSArray<NSNumber *> *)spaces;
+}
+
+BOOL SIWindowIsSpaceRegistered(int conn, uint32_t windowID) {
+    return SICopySpacesForWindow(conn, windowID).count > 0;
+}
+
+BOOL SIWindowIsPinnedToSpace(int conn, uint32_t windowID, uint64_t spaceID) {
+    NSArray<NSNumber *> *spaces = SICopySpacesForWindow(conn, windowID);
+    return spaces.count == 1 && spaces[0].unsignedLongLongValue == spaceID;
+}
+
+BOOL SIPinWindowToSpace(int conn, uint32_t windowID, uint64_t spaceID) {
+    if (windowID == 0) return NO;
+    CFArrayRef wins = makeWindowArray(windowID);
+    if (!wins) return NO;
+
+    BOOL ok = YES;
+    @try {
+        CGSSpaceAddWindowsAndRemoveFromSpaces(conn, spaceID, wins, kSIAllSpacesSelector);
+    } @catch (NSException *e) {
+        NSLog(@"[SpaceInvader] SIPinWindowToSpace exception: %@", e);
+        ok = NO;
+    }
+    CFRelease(wins);
+    return ok;
 }
 
 BOOL SIMoveWindowToSpace(int conn,
