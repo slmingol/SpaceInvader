@@ -1,12 +1,17 @@
 import AppKit
 
+// All panels use canJoinAllSpaces so they are present on every desktop.
+// Visibility is controlled exclusively via alphaValue:
+//   - active space arrival → flash (alphaValue 1 → 0 after 0.4 s)
+//   - all other states     → alphaValue 0 (hidden)
+// This avoids the class of bugs where CGS space-pinning silently fails
+// and leaves a panel permanently visible on the wrong desktop.
+
 @MainActor
 final class SpaceLabelController {
-    private var panels:         [String: NSPanel] = [:]
-    private var pinnedSpaces:   Set<String>       = []  // successfully pinned to their own space
-    private var floatingSpaces: Set<String>       = []  // pinning failed; use canJoinAllSpaces + alpha control
+    private var panels:    [String: NSPanel]          = [:]
+    private var fadeTasks: [String: DispatchWorkItem] = [:]
     private let appState: AppState
-    private var fadeTasks:      [String: DispatchWorkItem] = [:]
 
     init(appState: AppState) {
         self.appState = appState
@@ -17,15 +22,14 @@ final class SpaceLabelController {
     func update(spaces: [Space]) {
         let liveIDs = Set(spaces.map { $0.id })
         for id in Array(panels.keys) where !liveIDs.contains(id) {
+            fadeTasks[id]?.cancel()
+            fadeTasks.removeValue(forKey: id)
             panels[id]?.orderOut(nil)
             panels.removeValue(forKey: id)
-            pinnedSpaces.remove(id)
-            floatingSpaces.remove(id)
         }
         let existingIDs = Set(panels.keys)
-        let activeSpaceCGID = spaces.first(where: { $0.isActive })?.cgID ?? 0
         for space in spaces where !space.isFullscreen && !existingIDs.contains(space.id) {
-            createAndPinPanel(for: space, activeSpaceCGID: activeSpaceCGID)
+            createPanel(for: space)
         }
         syncVisibility(spaces: spaces)
     }
@@ -42,11 +46,7 @@ final class SpaceLabelController {
     private func syncVisibility(spaces: [Space]) {
         for space in spaces {
             guard let panel = panels[space.id] else { continue }
-            let isTracked = pinnedSpaces.contains(space.id) || floatingSpaces.contains(space.id)
-            guard isTracked else { continue }
-
             if space.isActive {
-                // Cancel any in-flight fade; flash the label, then fade out.
                 fadeTasks[space.id]?.cancel()
                 fadeTasks[space.id] = nil
                 panel.alphaValue = 1
@@ -58,62 +58,21 @@ final class SpaceLabelController {
                 }
                 fadeTasks[space.id] = work
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: work)
-            } else if floatingSpaces.contains(space.id) {
-                // Floating panel is on all spaces — keep hidden when not active
-                // so it doesn't show as a stale banner on the wrong desktop.
-                if fadeTasks[space.id] == nil {
-                    panel.alphaValue = 0
-                }
             } else if fadeTasks[space.id] == nil {
-                // Pinned panel is on its own space — always visible there (MC thumbnails).
-                // Let in-flight fades complete rather than snapping back to visible.
-                panel.alphaValue = 1
+                panel.alphaValue = 0
             }
+            // If a fade is in progress, let it complete.
         }
     }
 
-    // MARK: - Setup
+    // MARK: - Panel factory
 
-    private func createAndPinPanel(for space: Space, activeSpaceCGID: Int) {
+    private func createPanel(for space: Space) {
         let panel = makePanel(for: space)
         panels[space.id] = panel
         panel.alphaValue = 0
         panel.orderFront(nil)
-
-        if space.isActive {
-            pinnedSpaces.insert(space.id)
-        } else {
-            let spaceID   = space.id
-            let isActive  = space.isActive
-            let targetSID = UInt64(space.cgID)
-            let sourceSID = UInt64(activeSpaceCGID)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self, weak panel] in
-                guard let self, let panel else { return }
-                let ok = self.pinPanel(panel, toSpaceID: targetSID, fromSpaceID: sourceSID)
-                if ok {
-                    self.pinnedSpaces.insert(spaceID)
-                    panel.alphaValue = 1
-                } else {
-                    // Pinning failed — make panel join all spaces so it can flash
-                    // on the correct space when the user switches there, but keep
-                    // it hidden until that space becomes active.
-                    panel.collectionBehavior.insert(.canJoinAllSpaces)
-                    self.floatingSpaces.insert(spaceID)
-                    panel.alphaValue = 0
-                }
-            }
-        }
     }
-
-    @discardableResult
-    private func pinPanel(_ panel: NSPanel, toSpaceID sid: UInt64, fromSpaceID: UInt64) -> Bool {
-        let wid = UInt32(panel.windowNumber)
-        guard wid != 0, sid != 0, fromSpaceID != 0 else { return false }
-        let conn = _CGSDefaultConnection()
-        return SIMoveWindowToSpace(conn, wid, sid, fromSpaceID)
-    }
-
-    // MARK: - Panel factory
 
     private func makePanel(for space: Space) -> NSPanel {
         let panel = NSPanel(
@@ -122,18 +81,18 @@ final class SpaceLabelController {
             backing: .buffered,
             defer: false
         )
-        panel.backgroundColor = .clear
-        panel.isOpaque        = false
-        panel.hasShadow       = false
-        panel.level           = NSWindow.Level(rawValue: 1)
-        panel.collectionBehavior = [.ignoresCycle]
+        panel.backgroundColor    = .clear
+        panel.isOpaque           = false
+        panel.hasShadow          = false
+        panel.level              = NSWindow.Level(rawValue: 1)
+        panel.collectionBehavior = [.canJoinAllSpaces, .ignoresCycle]
         panel.ignoresMouseEvents = true
         panel.hidesOnDeactivate  = false
         updateContent(panel: panel, space: space)
         return panel
     }
 
-    private func overlayRect(screen: NSScreen, text: String) -> NSRect {
+    private func overlayRect(screen: NSScreen) -> NSRect {
         let margin: CGFloat = 16
         let h:      CGFloat = 176
         return NSRect(
@@ -148,7 +107,7 @@ final class SpaceLabelController {
         let text  = labelText(for: space)
         let color = NSColor(appState.resolvedColor(for: space))
         guard let screen = NSScreen.main else { return }
-        let rect = overlayRect(screen: screen, text: text)
+        let rect = overlayRect(screen: screen)
         panel.setFrame(rect, display: false)
         panel.contentView = OverlayView(
             text: text, color: color,
