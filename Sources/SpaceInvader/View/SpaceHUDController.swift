@@ -134,15 +134,14 @@ final class SpaceHUDController {
         let tileW: CGFloat = 54, separatorW: CGFloat = 1
         let spacing: CGFloat = 8, hPad: CGFloat = 20
 
-        let desktop = spaces.filter { !$0.isFullscreen }
-        guard !desktop.isEmpty else { return 200 }
+        guard !spaces.isEmpty else { return 200 }
 
         var seen = Set<String>()
         var groupCount = 0
-        for s in desktop {
+        for s in spaces {
             if seen.insert(s.displayID).inserted { groupCount += 1 }
         }
-        let n = desktop.count
+        let n = spaces.count
         // Items in the HStack: n tiles + (groupCount-1) separators, each
         // separated by `spacing`.
         let itemCount = n + (groupCount - 1)

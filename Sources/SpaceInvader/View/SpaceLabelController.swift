@@ -6,18 +6,10 @@ final class SpaceLabelController {
     private var pinnedSpaces:   Set<String>       = []  // successfully pinned to their own space
     private var floatingSpaces: Set<String>       = []  // pinning failed; use canJoinAllSpaces + alpha control
     private let appState: AppState
-    nonisolated(unsafe) private var spaceChangeObserver: Any?
     private var fadeTasks:      [String: DispatchWorkItem] = [:]
 
     init(appState: AppState) {
         self.appState = appState
-        observeSpaceChange()
-    }
-
-    deinit {
-        if let o = spaceChangeObserver {
-            NSWorkspace.shared.notificationCenter.removeObserver(o)
-        }
     }
 
     // MARK: - Public interface
@@ -76,21 +68,6 @@ final class SpaceLabelController {
                 // Pinned panel is on its own space — always visible there (MC thumbnails).
                 // Let in-flight fades complete rather than snapping back to visible.
                 panel.alphaValue = 1
-            }
-        }
-    }
-
-    // MARK: - Observers
-
-    private func observeSpaceChange() {
-        spaceChangeObserver = NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.activeSpaceDidChangeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            MainActor.assumeIsolated {
-                guard let self else { return }
-                self.syncVisibility(spaces: self.appState.spaces)
             }
         }
     }
