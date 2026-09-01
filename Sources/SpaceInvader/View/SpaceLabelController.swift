@@ -92,6 +92,8 @@ final class SpaceLabelController {
             guard let panel = panels[space.id] else { continue }
             updateContent(panel: panel, space: space)
         }
+        reconcilePins(spaces: spaces)
+        syncVisibility(spaces: spaces)
     }
 
     // MARK: - Pinning
@@ -176,13 +178,18 @@ final class SpaceLabelController {
 
             if space.isActive {
                 // Flash on arrival, then get out of the way.
+                // Do NOT cancel an in-progress fade: during boot and display changes,
+                // activeSpaceDidChangeNotification fires repeatedly in quick succession.
+                // Cancelling+restarting the 0.4s timer on every call means it never
+                // actually completes and the banner stays stuck at alphaValue=1.
                 cancel(&restoreTasks, key)
-                cancel(&fadeTasks, key)
-                panel.alphaValue = 1
-                schedule(&fadeTasks, key, after: 0.4) { [weak panel] in
-                    NSAnimationContext.runAnimationGroup { ctx in
-                        ctx.duration = 0.10
-                        panel?.animator().alphaValue = 0
+                if fadeTasks[key] == nil {
+                    panel.alphaValue = 1
+                    schedule(&fadeTasks, key, after: 0.4) { [weak panel] in
+                        NSAnimationContext.runAnimationGroup { ctx in
+                            ctx.duration = 0.10
+                            panel?.animator().alphaValue = 0
+                        }
                     }
                 }
             } else if unpinned.contains(key) {
