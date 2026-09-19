@@ -13,7 +13,7 @@ packages:
     from: "2.0.0"
   LaunchAtLogin:
     url: https://github.com/sindresorhus/LaunchAtLogin-Modern
-    from: "1.0.0"
+    from: "1.1.0"
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
     from: "2.0.0"
