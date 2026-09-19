@@ -165,7 +165,7 @@ jobs:
 
       - name: Upload DMG to release
         if: steps.tag.outputs.skip != 'true'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ env.VERSION }}
           files: build/SpaceInvader-${{ env.VERSION }}.dmg
