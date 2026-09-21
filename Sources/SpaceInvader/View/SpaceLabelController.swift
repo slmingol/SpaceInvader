@@ -87,6 +87,17 @@ final class SpaceLabelController {
         syncVisibility(spaces: spaces)
     }
 
+    /// Immediately hides every non-active panel and cancels pending restore tasks.
+    /// Called by AppDelegate on screensChanged, before the delayed reconcile pass,
+    /// so panels never remain visible on the wrong space during WindowServer drift.
+    func hideNonActivePanels() {
+        let activeID = appState.spaces.first(where: { $0.isActive })?.id
+        for (key, panel) in panels where key != activeID {
+            cancel(&restoreTasks, key)
+            panel.alphaValue = 0
+        }
+    }
+
     func refreshAll(spaces: [Space]) {
         for space in spaces {
             guard let panel = panels[space.id] else { continue }
@@ -114,6 +125,12 @@ final class SpaceLabelController {
             guard wid != 0, SIWindowIsSpaceRegistered(conn, wid) else { continue }
             if SIWindowIsPinnedToSpace(conn, wid, target) { continue }
 
+            // Panel drifted (e.g. scene-invalidated event from Control Center /
+            // display change moved it back to the active space). Hide immediately
+            // so it is not visible on the wrong desktop while re-pinning runs.
+            // The restore task (alphaValue=1) is rescheduled after pin confirms.
+            cancel(&restoreTasks, space.id)
+            panel.alphaValue = 0
             startPinning(key: space.id, target: target)
         }
     }
@@ -134,6 +151,9 @@ final class SpaceLabelController {
                     if SIWindowIsPinnedToSpace(conn, wid, target) {
                         self.pinTasks[key] = nil
                         self.unpinned.remove(key)
+                        // Sync visibility now that the pin is confirmed — don't
+                        // wait for the next space change to schedule the restore.
+                        self.syncVisibility(spaces: self.appState.spaces)
                         return
                     }
                     _ = SIPinWindowToSpace(conn, wid, target)
@@ -196,14 +216,31 @@ final class SpaceLabelController {
                 // Fallback panels live on every space; they must stay hidden.
                 cancel(&restoreTasks, key)
                 if fadeTasks[key] == nil { panel.alphaValue = 0 }
-            } else if restoreTasks[key] == nil {
+            } else if pinTasks[key] == nil, restoreTasks[key] == nil {
+                // Only schedule the restore once pinning has completed. If the
+                // pin is still in flight the panel is on the wrong (active)
+                // space and setting alphaValue=1 here would make it visible
+                // before it has been moved to its target space.
                 // Pinned panels stay lit so the space's Mission Control
                 // thumbnail carries the label. An in-flight arrival fade is
                 // deliberately left to finish, and the restore is deferred past
                 // the space-switch animation — otherwise the label pops back in
                 // while the desktop the user just left is still sliding away.
-                schedule(&restoreTasks, key, after: 0.8) { [weak panel] in
-                    panel?.alphaValue = 1
+                schedule(&restoreTasks, key, after: 0.8) { [weak self, weak panel] in
+                    guard let self, let panel else { return }
+                    // Re-check active state: space may have changed during the delay.
+                    let isNowActive = self.appState.spaces.first(where: { $0.id == key })?.isActive ?? false
+                    guard !isNowActive else { return }
+                    // Verify pin is still holding. If the panel drifted back to the
+                    // active space (e.g. WindowServer reassigned it after a display
+                    // event), making it visible would paint the label over the user's
+                    // work. reconcilePins will re-pin and the next event will restore.
+                    let conn = _CGSDefaultConnection()
+                    let wid  = self.windowID(of: panel)
+                    guard let target = self.targets[key],
+                          wid != 0,
+                          SIWindowIsPinnedToSpace(conn, wid, target) else { return }
+                    panel.alphaValue = 1
                 }
             }
         }
