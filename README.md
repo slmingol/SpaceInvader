@@ -38,11 +38,12 @@ A macOS menu bar app for managing Mission Control spaces. Assign names, colors, 
 - **Quick Switcher** — keyboard-driven palette for jumping to any space by name or number
 - **Space labels** — colored overlay visible on each non-active space
 - **Per-space customization** — name, color, emoji, and dedicated keyboard shortcut (Ctrl+1–9) for each space
+- **HUD timing** — configurable reveal delay, dismiss delay, expand/collapse duration via Settings
 - **Launch at login** — runs automatically on startup
 
 ## Requirements
 
-- macOS 15 Ventura or later
+- macOS 15 Sequoia or later
 - Mission Control must have "Displays have separate Spaces" enabled (System Settings → Desktop & Dock)
 - Accessibility permission (System Settings → Privacy & Security → Accessibility)
 
