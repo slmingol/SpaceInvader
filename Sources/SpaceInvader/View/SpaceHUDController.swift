@@ -340,7 +340,7 @@ final class SpaceHUDController {
     private func startDwell() {
         guard dwellTask == nil else { return }
         dwellTask = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(200))
+            try? await Task.sleep(for: .milliseconds(Int(self.appState.hudDwellDelay)))
             guard !Task.isCancelled else { return }
             self.dwellTask = nil
             self.expand()
@@ -360,7 +360,7 @@ final class SpaceHUDController {
 
         panel.alphaValue = 1
         let startRect = panel.frame
-        let duration  = 0.25
+        let duration  = appState.hudExpandDuration
 
         revealTask = Task { @MainActor in
             let startT = CACurrentMediaTime()
@@ -389,7 +389,7 @@ final class SpaceHUDController {
     private func scheduleCollapse() {
         guard hideDelayTask == nil, hideAnimTask == nil else { return }
         hideDelayTask = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(400))
+            try? await Task.sleep(for: .milliseconds(Int(self.appState.hudDismissDelay)))
             guard !Task.isCancelled else { return }
             self.hideDelayTask = nil
             self.collapse()
@@ -402,7 +402,7 @@ final class SpaceHUDController {
 
         panel.alphaValue = 0
         let startRect = panel.frame
-        let duration  = 0.18
+        let duration  = appState.hudCollapseDuration
 
         hideAnimTask = Task { @MainActor in
             let startT = CACurrentMediaTime()

@@ -60,9 +60,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             name: NSApplication.didChangeScreenParametersNotification,
             object: nil
         )
+        // Opening any SpaceInvader window while Control Center is visible triggers
+        // a scene-invalidated event that moves pinned label panels to the active
+        // space. Hide non-active panels whenever any of our windows becomes key.
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appWindowBecameKey),
+            name: NSWindow.didBecomeKeyNotification,
+            object: nil
+        )
 
         setupHotkeys()
         observer.start()
+    }
+
+    @objc private func appWindowBecameKey(_ notification: Notification) {
+        // Only act on windows that belong to this app (excludes system windows).
+        guard let window = notification.object as? NSWindow,
+              window.windowController?.document == nil,
+              NSApp.windows.contains(window) else { return }
+        spaceLabelController?.hideNonActivePanels()
+        // Schedule reconcile + restore so panels return to alpha=1 in their
+        // correct spaces after the scene-invalidated event settles.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+            guard let self else { return }
+            self.spaceLabelController?.refreshAll(spaces: self.appState.spaces)
+        }
     }
 
     @objc private func spaceMetadataChanged() {
@@ -70,7 +93,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func screensChanged() {
-        spaceLabelController?.refreshAll(spaces: appState.spaces)
+        // Immediately hide all non-active panels. On macOS 26, scene-invalidated
+        // events (Control Center, display changes) fire NSApplicationDidChange-
+        // ScreenParametersNotification BEFORE WindowServer finishes moving pinned
+        // panels to the active space. If we wait for reconcilePins to detect the
+        // drift, the notification has already arrived while pins still look valid,
+        // so the drift completes undetected. Hiding upfront is race-free.
+        spaceLabelController?.hideNonActivePanels()
+        // 150ms delay lets WindowServer settle so the pin-check in reconcilePins
+        // reads the post-drift state and re-pins panels that actually moved.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+            guard let self else { return }
+            self.spaceLabelController?.refreshAll(spaces: self.appState.spaces)
+        }
     }
 
     private func setupHotkeys() {
