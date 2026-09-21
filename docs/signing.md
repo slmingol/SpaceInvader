@@ -177,7 +177,7 @@ git tag v1.2.3
 git push origin v1.2.3
 ```
 
-The workflow fires on `v*` tag pushes. Branch pushes to `main` also trigger the workflow but skip all release steps if no version tag points at HEAD.
+The workflow fires on `v*` tag pushes only. Branch pushes do not trigger it.
 
 ---
 
