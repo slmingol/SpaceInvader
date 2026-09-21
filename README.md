@@ -31,6 +31,19 @@ A macOS menu bar app for managing Mission Control spaces. Assign names, colors, 
 </td>
 </tr></table>
 
+<hr/>
+
+<table align="center"><tr>
+<td align="center">
+  <img src="docs/screenshots/spaces.png" alt="Spaces settings" width="520"/><br/>
+  <sub>Spaces — per-space name, color, emoji, and keyboard shortcut</sub>
+</td>
+<td align="center">
+  <img src="docs/screenshots/settings.png" alt="HUD settings" width="520"/><br/>
+  <sub>Settings — HUD timing sliders</sub>
+</td>
+</tr></table>
+
 ## Features
 
 - **Menu bar indicator** — shows the active space name and color at a glance

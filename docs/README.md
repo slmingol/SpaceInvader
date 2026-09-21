@@ -29,3 +29,19 @@ Move the cursor to the top of the screen to reveal the HUD. Each tile shows the 
 Space labels appear as colored overlays on each desktop thumbnail in Mission Control, making it easy to identify spaces at a glance.
 
 <img src="screenshots/mc.png" alt="Mission Control overlays" width="900"/>
+
+---
+
+## Spaces settings
+
+Per-space name, color, emoji, and keyboard shortcut. Apply a palette to all spaces at once.
+
+<img src="screenshots/spaces.png" alt="Spaces settings" width="720"/>
+
+---
+
+## Settings — HUD timing
+
+Configurable reveal delay, dismiss delay, and animation durations for the HUD.
+
+<img src="screenshots/settings.png" alt="HUD timing settings" width="720"/>
