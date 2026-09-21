@@ -9,6 +9,20 @@ final class AppState: ObservableObject {
     @Published private(set) var spaceColors: [String: String] = load("spaceColors")
     @Published private(set) var spaceEmojis: [String: String] = load("spaceEmojis")
 
+    // HUD timing (milliseconds / seconds, persisted via UserDefaults)
+    @Published var hudDwellDelay:       Double = (UserDefaults.standard.object(forKey: "hudDwellDelay")       as? Double) ?? 200
+    @Published var hudDismissDelay:     Double = (UserDefaults.standard.object(forKey: "hudDismissDelay")     as? Double) ?? 400
+    @Published var hudExpandDuration:   Double = (UserDefaults.standard.object(forKey: "hudExpandDuration")   as? Double) ?? 0.25
+    @Published var hudCollapseDuration: Double = (UserDefaults.standard.object(forKey: "hudCollapseDuration") as? Double) ?? 0.18
+
+    func setHUDTiming(dwellDelay: Double? = nil, dismissDelay: Double? = nil,
+                      expandDuration: Double? = nil, collapseDuration: Double? = nil) {
+        if let v = dwellDelay       { hudDwellDelay       = v; UserDefaults.standard.set(v, forKey: "hudDwellDelay") }
+        if let v = dismissDelay     { hudDismissDelay     = v; UserDefaults.standard.set(v, forKey: "hudDismissDelay") }
+        if let v = expandDuration   { hudExpandDuration   = v; UserDefaults.standard.set(v, forKey: "hudExpandDuration") }
+        if let v = collapseDuration { hudCollapseDuration = v; UserDefaults.standard.set(v, forKey: "hudCollapseDuration") }
+    }
+
     // MARK: Names
 
     func setName(_ name: String, for id: String) {

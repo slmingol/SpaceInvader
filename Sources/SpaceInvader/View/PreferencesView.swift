@@ -572,30 +572,145 @@ private struct SpaceTimeRow: View {
 // MARK: - General Settings
 
 private struct GeneralSettingsPage: View {
+    @EnvironmentObject private var appState: AppState
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             PageHeader(title: "Settings", subtitle: "General preferences")
             Divider()
-            GroupBox {
-                VStack(alignment: .leading, spacing: 10) {
-                    LaunchAtLogin.Toggle()
-                    Divider()
-                    HStack {
-                        Text("Quick Switcher")
-                            .font(.subheadline)
-                        Spacer()
-                        KeyboardShortcuts.Recorder("", name: .quickSwitcher)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    GroupBox {
+                        VStack(alignment: .leading, spacing: 10) {
+                            LaunchAtLogin.Toggle()
+                            Divider()
+                            HStack {
+                                Text("Quick Switcher")
+                                    .font(.subheadline)
+                                Spacer()
+                                KeyboardShortcuts.Recorder("", name: .quickSwitcher)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    } label: {
+                        Label("General", systemImage: "gear")
+                            .font(.subheadline.weight(.semibold))
                     }
+
+                    HUDTimingSection()
                 }
-                .padding(.vertical, 4)
-            } label: {
-                Label("General", systemImage: "gear")
-                    .font(.subheadline.weight(.semibold))
+                .padding(20)
             }
-            .padding(20)
-            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+}
+
+private struct HUDTimingSection: View {
+    @EnvironmentObject private var appState: AppState
+
+    var body: some View {
+        GroupBox {
+            VStack(spacing: 14) {
+                HUDSliderRow(
+                    label: "Reveal delay",
+                    detail: "Hover time before HUD opens",
+                    value: Binding(
+                        get: { appState.hudDwellDelay },
+                        set: { appState.setHUDTiming(dwellDelay: $0) }
+                    ),
+                    range: 50...600,
+                    unit: "ms",
+                    step: 25,
+                    format: "%.0f"
+                )
+                Divider()
+                HUDSliderRow(
+                    label: "Dismiss delay",
+                    detail: "Away time before HUD closes",
+                    value: Binding(
+                        get: { appState.hudDismissDelay },
+                        set: { appState.setHUDTiming(dismissDelay: $0) }
+                    ),
+                    range: 100...1000,
+                    unit: "ms",
+                    step: 50,
+                    format: "%.0f"
+                )
+                Divider()
+                HUDSliderRow(
+                    label: "Open speed",
+                    detail: "Expand animation duration",
+                    value: Binding(
+                        get: { appState.hudExpandDuration * 1000 },
+                        set: { appState.setHUDTiming(expandDuration: $0 / 1000) }
+                    ),
+                    range: 50...500,
+                    unit: "ms",
+                    step: 25,
+                    format: "%.0f"
+                )
+                Divider()
+                HUDSliderRow(
+                    label: "Close speed",
+                    detail: "Collapse animation duration",
+                    value: Binding(
+                        get: { appState.hudCollapseDuration * 1000 },
+                        set: { appState.setHUDTiming(collapseDuration: $0 / 1000) }
+                    ),
+                    range: 50...400,
+                    unit: "ms",
+                    step: 25,
+                    format: "%.0f"
+                )
+            }
+            .padding(.vertical, 4)
+        } label: {
+            HStack {
+                Label("HUD Behavior", systemImage: "rectangle.topthird.inset.filled")
+                    .font(.subheadline.weight(.semibold))
+                Spacer()
+                Button("Reset") {
+                    appState.setHUDTiming(
+                        dwellDelay: 200, dismissDelay: 400,
+                        expandDuration: 0.25, collapseDuration: 0.18
+                    )
+                }
+                .font(.system(size: 11))
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+private struct HUDSliderRow: View {
+    let label: String
+    let detail: String
+    @Binding var value: Double
+    let range: ClosedRange<Double>
+    let unit: String
+    let step: Double
+    let format: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(label)
+                        .font(.system(size: 13))
+                    Text(detail)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Text("\(String(format: format, value)) \(unit)")
+                    .font(.system(size: 12).monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .frame(width: 60, alignment: .trailing)
+            }
+            Slider(value: $value, in: range, step: step)
+        }
     }
 }
 
